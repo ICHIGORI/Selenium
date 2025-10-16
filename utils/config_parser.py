@@ -1,8 +1,9 @@
 import re
+import os.path
 from base_path import BASE_PATH
 
 
-CONFIG_PATH = BASE_PATH + "\\utils\\CONFIG"
+CONFIG_PATH = os.path.join(BASE_PATH, "utils", "CONFIG")
 
 
 def get_config_list(path: str = CONFIG_PATH) -> list:
