@@ -1,8 +1,21 @@
+import pytest
+
 from pages.dzen_page import DzenLocators
 from utils.Chrome import Chrome
 
 
 class TestDzen:
+
+    def setup_class(self):
+        self.chrome = Chrome("https://dzen.ru/")
+        self.driver = self.chrome.driver
+
+    def setup_method(self):
+        self.chrome.get()
+        self.chrome.wait(1)
+
+    def teardown_class(self):
+        self.chrome.driver.quit()
 
     def test_search_arrow_clear(self):
         """Тест-кйст: Проверка отображения кнопки отчистки поисковой строки
@@ -11,22 +24,16 @@ class TestDzen:
         -Ввести в поисковую строку текст
         -Кнопки отчистки поисковой строки отображается
         """
-        chrome = Chrome("https://dzen.ru/")
-        chrome.get()
-        driver = chrome.driver
-        chrome.wait(2)
 
-        frame_iframe = driver.find_element(*DzenLocators.frame_iframe)
-        driver.switch_to.frame(frame_iframe)
-        btn_arrow_clear = driver.find_element(*DzenLocators.btn_arrow_clear)
+        frame_iframe = self.driver.find_element(*DzenLocators.frame_iframe)
+        self.driver.switch_to.frame(frame_iframe)
+        btn_arrow_clear = self.driver.find_element(*DzenLocators.btn_arrow_clear)
         assert btn_arrow_clear.is_enabled() is True
-        element = driver.find_element(*DzenLocators.input_search_line)
+        element = self.driver.find_element(*DzenLocators.input_search_line)
         element.click()
         element.send_keys("fff")
-        chrome.wait(1)
+        self.chrome.wait(1)
         assert btn_arrow_clear.is_displayed() is True
-
-        chrome.driver.quit()
 
     def test_search_arrow_common_keyboard(self):
         """Тест-кйст: Проверка отображения кнопки виртуальной клавиатуры
@@ -35,20 +42,15 @@ class TestDzen:
         -Ввести в поисковую строку текст
         -Кнопка виртуальной клавиатуры не отображается
         """
-        chrome = Chrome("https://dzen.ru/")
-        chrome.get()
-        driver = chrome.driver
-        chrome.wait(2)
 
-        frame_iframe = driver.find_element(*DzenLocators.frame_iframe)
-        keyboard = driver.find_element(*DzenLocators.btn_a_virtual_keyboard)
+        frame_iframe = self.driver.find_element(*DzenLocators.frame_iframe)
+        keyboard = self.driver.find_element(*DzenLocators.btn_a_virtual_keyboard)
         assert keyboard.is_displayed() is True
-        driver.switch_to.frame(frame_iframe)
-        element = driver.find_element(*DzenLocators.input_search_line)
+        self.driver.switch_to.frame(frame_iframe)
+        element = self.driver.find_element(*DzenLocators.input_search_line)
         element.click()
         element.send_keys("fff")
-        chrome.wait(1)
-        driver.switch_to.default_content()
+        self.chrome.wait(1)
+        self.driver.switch_to.default_content()
         assert keyboard.is_enabled() is True
 
-        chrome.driver.quit()
