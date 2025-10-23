@@ -1,7 +1,6 @@
-from selenium.webdriver.common.by import By
 from utils.Chrome import Chrome
-from tests.pages.dzen_page import DzenLocators
-from tests.pages.yandex_page import YandexLocators
+from pages.dzen_page import DzenLocators
+from pages.yandex_page import YandexLocators
 
 
 def dzen_search_arrow_clear():

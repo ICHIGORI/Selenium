@@ -1,5 +1,4 @@
-import pytest
-from tests.pages.dzen_page import DzenLocators
+from pages.dzen_page import DzenLocators
 from utils.Chrome import Chrome
 
 
