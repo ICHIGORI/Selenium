@@ -12,8 +12,14 @@ class BasePage:
         self.driver = driver
         self.actions = ActionChains(self.driver)
         self.base_url = base_url
+        self.time_expectation = 1.6
 
-    def wait(self, timer: int = 3):
+    def __driver_wait(self, time_expectation=None):
+        return WebDriverWait(self.driver,
+                             timeout=time_expectation if time_expectation else self.time_expectation,
+                             poll_frequency=.2)
+
+    def wait(self, timer: int | float = 3):
         time.sleep(timer)
 
     def get(self, url: str = None):
@@ -26,25 +32,26 @@ class BasePage:
         except TimeoutException:
             print(f"[!]{message} with time: {time_expectation}")
 
-    def assert_enabled(self, element, message="Assert failed", time_expectation=3):
-        wait = WebDriverWait(self.driver, timeout=time_expectation, poll_frequency=.2)
+    def assert_enabled(self, element, message="Assert failed", time_expectation=None):
+        wait = self.__driver_wait(time_expectation)
         wait.until(lambda _: element.is_enabled(), f"[!]{message}")
 
-    def assert_displayed(self, element, message="Assert failed", time_expectation=3):
-        wait = WebDriverWait(self.driver, timeout=time_expectation, poll_frequency=.2)
+    def assert_displayed(self, element, message="Assert failed", time_expectation=None):
+        wait = self.__driver_wait(time_expectation)
         wait.until(lambda _: element.is_displayed(), f"[!]{message}")
 
-    def assert_not_displayed(self, element, message="Assert failed", time_expectation=3):
+    def assert_not_displayed(self, element, message="Assert failed", time_expectation=None):
         try:
-            wait = WebDriverWait(self.driver, timeout=time_expectation, poll_frequency=.2)
+            self.wait(0.4)
+            wait = self.__driver_wait(time_expectation)
             wait.until(lambda _: element.is_displayed(), f"[!]{message}")
             raise AssertionError(f"[!]{message}")
         except TimeoutException:
             return self
 
-    def assert_not_enabled(self, element, message="Assert failed", time_expectation=3):
+    def assert_not_enabled(self, element, message="Assert failed", time_expectation=None):
         try:
-            wait = WebDriverWait(self.driver, timeout=time_expectation, poll_frequency=.2)
+            wait = self.__driver_wait(time_expectation)
             wait.until(lambda _: element.is_enabled(), f"[!]{message}")
             raise AssertionError(f"[!]{message}")
         except TimeoutException:
@@ -63,6 +70,18 @@ class BasePage:
             print(f"[!]Can't find element by locator {locator} with time: {time_expectation}")
             raise TimeoutException
 
+    def find_elements(self, locator: tuple[str, str], time_expectation=3):
+        try:
+            elements = WebDriverWait(self.driver, time_expectation).until(
+                EC.presence_of_all_elements_located(locator),
+                message=f"[!]Can't find elements by locator {locator}"
+            )
+            return elements
+        except NoSuchElementException:
+            print(f"[!]Element no found\n by locator{locator}")
+        except TimeoutException:
+            print(f"[!]Can't find element by locator {locator} with time: {time_expectation}")
+            raise TimeoutException
 
     def find_element_by_id(self, element_id: str):
         return self.find_element((By.ID, element_id))
