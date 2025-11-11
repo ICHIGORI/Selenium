@@ -1,22 +1,15 @@
 import pytest
-
 from pages.dzen_page import DzenLocators
-from utils.Chrome import Chrome
 
 
+@pytest.mark.usefixtures("browser_instance")
 class TestDzen:
 
-    def setup_class(self):
-        self.browser = Chrome("https://dzen.ru/")
+    def setup_method(self):
         self.driver = self.browser.driver
         self.actions = self.browser.actions
         self.input_text = "fff"
-
-    def setup_method(self):
         self.browser.get()
-
-    def teardown_class(self):
-        self.browser.driver.quit()
 
     def test_search_line_enabled(self):
         """Тест-кйст: Проверка доступности для взаимодействия поисковой строки
